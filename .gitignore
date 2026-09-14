@@ -1,0 +1,30 @@
+# Godot
+.godot/
+
+# C# / .NET
+.vs/
+.vscode/
+.idea/
+bin/
+obj/
+
+# Build outputs
+[Bb]uild/
+[Bb]uilds/
+[Dd]ebug/
+[Rr]elease/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+*.user
+*.suo
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
