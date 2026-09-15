@@ -30,7 +30,7 @@ class Building
 struct BuildingDefinition
 {
     public BuildingType Type { get; set; }
-    public GridPosition Size { get; set; }
+    public GridSize Size { get; set; }
 }
 
 
