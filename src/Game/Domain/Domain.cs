@@ -1,4 +1,6 @@
 // resources
+using System.Collections.Generic;
+
 enum ResourceType
 {
     IronOre,
@@ -46,4 +48,11 @@ struct GridSize
 {
     public int X { get; set; }
     public int Y { get; set; }
+}
+
+// factory class
+class Factory
+{
+    private Dictionary<int, Building> _buildings;
+    private Dictionary<GridPosition, int> _occupancy;
 }
