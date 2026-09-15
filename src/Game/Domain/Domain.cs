@@ -1,3 +1,4 @@
+// resources
 enum ResourceType
 {
     IronOre,
@@ -10,6 +11,7 @@ struct ResourceStack
     public int Amount { get; set; }
 }
 
+// buildings
 enum BuildingType
 {
     Mine,
@@ -18,8 +20,30 @@ enum BuildingType
     Storage,
 }
 
-struct Building
+class Building
 {
     public int Id { get; set; }
     public BuildingType Type { get; set; }
+    public GridPosition Position { get; set; }
+}
+
+struct BuildingDefinition
+{
+    public BuildingType Type { get; set; }
+    public GridPosition Size { get; set; }
+}
+
+
+
+// grid position and grid size structs
+struct GridPosition
+{
+    public int X { get; set; }
+    public int Y { get; set; }
+}
+
+struct GridSize
+{
+    public int X { get; set; }
+    public int Y { get; set; }
 }
