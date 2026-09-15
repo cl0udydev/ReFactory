@@ -1,5 +1,7 @@
 // resources
+using System;
 using System.Collections.Generic;
+using Godot;
 
 enum ResourceType
 {
@@ -64,6 +66,12 @@ struct GridPosition
 {
     public int X { get; set; }
     public int Y { get; set; }
+
+    public GridPosition(int x, int y)
+    {
+        this.X = x;
+        this.Y = y;
+    }
 }
 
 struct GridSize
@@ -83,6 +91,7 @@ class Factory
 {
     private Dictionary<int, Building> _buildings;
     private Dictionary<GridPosition, int> _occupancy;
+    private BuildingDefinitions _definitions;
 
     public Factory()
     {
@@ -92,6 +101,22 @@ class Factory
 
     private bool CanPlaceBuilding(BuildingType type, GridPosition position)
     {
-        
+        var size = _definitions.GetDefinition(type).Size;
+        var currentPos = new GridPosition(0, 0);
+
+        for (int offsetX = 0; offsetX < size.X; offsetX++)
+        {
+            for (int offsetY = 0; offsetY < size.Y; offsetY++)
+            {
+                currentPos.X = position.X + offsetX; currentPos.Y = position.Y + offsetY;
+
+                if (_occupancy.ContainsKey(currentPos))
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+
     }
 }
