@@ -1,7 +1,5 @@
 // resources
-using System;
 using System.Collections.Generic;
-using Godot;
 
 enum ResourceType
 {
@@ -26,9 +24,16 @@ enum BuildingType
 
 class Building
 {
-    public int Id { get; set; }
-    public BuildingType Type { get; set; }
+    public readonly int Id;
+    public readonly BuildingType Type;
     public GridPosition Position { get; set; }
+
+    public Building(int id, BuildingType type, GridPosition position)
+    {
+        this.Id = id;
+        this.Type = type;
+        this.Position = position;
+    }
 }
 
 struct BuildingDefinition
@@ -92,23 +97,25 @@ class Factory
     private Dictionary<int, Building> _buildings;
     private Dictionary<GridPosition, int> _occupancy;
     private BuildingDefinitions _definitions;
+    private int _nextBuildingId = 1;
 
     public Factory()
     {
         _buildings = new();
         _occupancy = new();
+        _definitions = new();
     }
 
     private bool CanPlaceBuilding(BuildingType type, GridPosition position)
     {
-        var size = _definitions.GetDefinition(type).Size;
-        var currentPos = new GridPosition(0, 0);
+        GridSize size = _definitions.GetDefinition(type).Size;
 
         for (int offsetX = 0; offsetX < size.X; offsetX++)
         {
             for (int offsetY = 0; offsetY < size.Y; offsetY++)
             {
-                currentPos.X = position.X + offsetX; currentPos.Y = position.Y + offsetY;
+
+                GridPosition currentPos = new GridPosition(position.X + offsetX, position.Y + offsetY);
 
                 if (_occupancy.ContainsKey(currentPos))
                 {
@@ -117,6 +124,33 @@ class Factory
             }
         }
         return true;
+    }
 
+    private Building? PlaceBuilding(BuildingType type, GridPosition position)
+    {
+        if (!CanPlaceBuilding(type, position))
+        {
+            return null;
+        }
+
+        Building building = new Building(_nextBuildingId, type, position);
+
+        _buildings.Add(_nextBuildingId, building);
+        
+        GridSize size = _definitions.GetDefinition(type).Size;
+
+        for (int offsetX = 0; offsetX < size.X; offsetX++)
+        {
+            for (int offsetY = 0; offsetY < size.Y; offsetY++)
+            {
+                GridPosition grid = new GridPosition(position.X + offsetX, position.Y + offsetY);
+
+                _occupancy.Add(grid, _nextBuildingId);
+            }
+        }
+
+        _nextBuildingId++;
+
+        return building;
     }
 }
