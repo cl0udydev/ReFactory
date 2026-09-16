@@ -1,5 +1,6 @@
 // resources
 using System.Collections.Generic;
+#nullable enable
 
 enum ResourceType
 {
