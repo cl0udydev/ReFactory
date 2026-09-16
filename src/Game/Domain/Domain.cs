@@ -1,7 +1,7 @@
-// resources
 using System.Collections.Generic;
 #nullable enable
 
+// resources
 enum ResourceType
 {
     IronOre,
@@ -127,7 +127,7 @@ class Factory
         return true;
     }
 
-    private Building? PlaceBuilding(BuildingType type, GridPosition position)
+    public Building? PlaceBuilding(BuildingType type, GridPosition position)
     {
         if (!CanPlaceBuilding(type, position))
         {
@@ -153,5 +153,31 @@ class Factory
         _nextBuildingId++;
 
         return building;
+    }
+
+    public void RemoveBuilding(int id)
+    {        
+        if (!_buildings.TryGetValue(id, out var building))
+        {
+            return;
+        }
+
+        GridPosition position = building.Position;
+        BuildingType type = building.Type;
+        GridSize size = _definitions.GetDefinition(type).Size;
+
+        for (int offsetX = 0; offsetX < size.X; offsetX++)
+        {
+            for (int offsetY = 0; offsetY < size.Y; offsetY++)
+            {
+                GridPosition grid = new GridPosition(position.X + offsetX, position.Y + offsetY);
+
+                _occupancy.Remove(grid);
+            }
+        }
+        
+        _buildings.Remove(id);
+
+        
     }
 }
