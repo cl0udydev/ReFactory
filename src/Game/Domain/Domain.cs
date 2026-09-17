@@ -8,10 +8,16 @@ enum ResourceType
     IronPlate,
 }
 
-struct ResourceStack
+struct ResourceAmount
 {
-    public ResourceType Type { get; set; }
-    public int Amount { get; set; }
+    public ResourceType Type;
+    public int Amount;
+
+    public ResourceAmount(ResourceType type, int amount)
+    {
+        Type = type;
+        Amount = amount;
+    }
 }
 
 // buildings
@@ -40,14 +46,14 @@ class Building
 struct BuildingDefinition
 {
     public readonly GridSize Size;
-    public readonly Recipe Recipe;
+    public readonly RecipeId[] AllowedRecipes;
     public readonly int Capacity;
     public readonly double CraftSpeed;
 
-    public BuildingDefinition(GridSize size, Recipe recipe, int capacity, double craftSpeed)
+    public BuildingDefinition(GridSize size, RecipeId[] recipes, int capacity, double craftSpeed)
     {
         this.Size = size;
-        this.Recipe = recipe;
+        this.AllowedRecipes = recipes;
         this.Capacity = capacity;
         this.CraftSpeed = craftSpeed;
     }
@@ -62,7 +68,12 @@ class BuildingDefinitions
     {
         _definitions = new()
         {
-            [BuildingType.Furnace] = new BuildingDefinition(new GridSize(2, 3))
+            [BuildingType.Furnace] = new BuildingDefinition(
+                size: new GridSize(2, 3),
+                recipes: new RecipeId[] {RecipeId.IronPlate},
+                capacity: 50,
+                craftSpeed: 0.75
+            )
         };
     }
 
@@ -73,19 +84,53 @@ class BuildingDefinitions
 }
 
 // recipes
+enum RecipeId
+{
+    IronPlate,
+    CopperPlate,
+}
+
 struct Recipe
 {
-    public Dictionary<ResourceType, int> Input;
-    public Dictionary<ResourceType, int> Output;
+    public ResourceAmount[] Input;
+    public ResourceAmount[] Output;
     public double BaseCraftTime;
 
-    public Recipe(Dictionary<ResourceType, int> input, Dictionary<ResourceType, int> output, double time)
+    public Recipe(ResourceAmount[] input, ResourceAmount[] output, double time)
     {
         this.Input = input;
         this.Output = output;
         this.BaseCraftTime = time;
     }
 }
+
+class RecipeDatabase
+{
+    private Dictionary<RecipeId, Recipe> _recipes;
+
+    public RecipeDatabase()
+    {
+        _recipes = new();
+
+        _recipes[RecipeId.IronPlate] = new Recipe(
+            input: new ResourceAmount[]
+            {
+                new ResourceAmount(ResourceType.IronOre, 2),
+            },
+            output: new ResourceAmount[]
+            {
+                new ResourceAmount(ResourceType.IronPlate, 1),
+            },
+            time: 5.0
+        );
+    }
+
+    public Recipe GetRecipe(RecipeId id)
+    {
+        return _recipes[id];
+    }
+}
+
 
 
 // grid position and grid size structs
