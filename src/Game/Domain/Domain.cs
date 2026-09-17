@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data.Common;
 #nullable enable
 
 // resources
@@ -157,7 +158,7 @@ class Factory
 
     public void RemoveBuilding(int id)
     {        
-        if (!_buildings.TryGetValue(id, out var building))
+        if (!_buildings.TryGetValue(id, out Building? building))
         {
             return;
         }
@@ -179,5 +180,31 @@ class Factory
         _buildings.Remove(id);
 
         
+    }
+
+    public Building? GetBuildingAt(GridPosition position)
+    {
+        if (!_occupancy.TryGetValue(position, out int id))
+        {
+            return null;
+        }
+
+        Building building = _buildings[id];
+
+        return building;
+    }
+
+    public Building? GetBuilding(int id)
+    {
+        if (!_buildings.TryGetValue(id, out Building? building))
+        {
+            return null;
+        }
+        return building;
+    }
+
+    public int BuildingCount()
+    {
+        return _buildings.Count;
     }
 }
