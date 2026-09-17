@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Data.Common;
 #nullable enable
 
 // resources
@@ -64,6 +63,21 @@ class BuildingDefinitions
     public BuildingDefinition GetDefinition(BuildingType type)
     {
         return _definitions[type];
+    }
+}
+
+// recipes
+struct Recipe
+{
+    public Dictionary<ResourceType, int> Input;
+    public Dictionary<ResourceType, int> Output;
+    public double BaseCraftTime;
+
+    public Recipe(Dictionary<ResourceType, int> input, Dictionary<ResourceType, int> output, double time)
+    {
+        this.Input = input;
+        this.Output = output;
+        this.BaseCraftTime = time;
     }
 }
 
