@@ -39,11 +39,17 @@ class Building
 
 struct BuildingDefinition
 {
-    public GridSize Size { get; set; }
+    public readonly GridSize Size;
+    public readonly Recipe Recipe;
+    public readonly int Capacity;
+    public readonly double CraftSpeed;
 
-    public BuildingDefinition(GridSize size)
+    public BuildingDefinition(GridSize size, Recipe recipe, int capacity, double craftSpeed)
     {
         this.Size = size;
+        this.Recipe = recipe;
+        this.Capacity = capacity;
+        this.CraftSpeed = craftSpeed;
     }
 }
 
