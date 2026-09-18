@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 #nullable enable
 
 // resources
@@ -34,12 +35,14 @@ class Building
     public readonly int Id;
     public readonly BuildingType Type;
     public GridPosition Position { get; set; }
+    public readonly RecipeId SelectedRecipe;
 
-    public Building(int id, BuildingType type, GridPosition position)
+    public Building(int id, BuildingType type, GridPosition position, RecipeId recipe)
     {
         this.Id = id;
         this.Type = type;
         this.Position = position;
+        this.SelectedRecipe = recipe;
     }
 }
 
@@ -80,6 +83,23 @@ class BuildingDefinitions
     public BuildingDefinition GetDefinition(BuildingType type)
     {
         return _definitions[type];
+    }
+    
+    public bool IsRecipeAllowed(BuildingType type, RecipeId recipeId)
+    {
+        if (!_definitions.TryGetValue(type, out BuildingDefinition def))
+        {
+            return false;
+        }
+
+        foreach (RecipeId id in def.AllowedRecipes)
+        {
+            if (id == recipeId)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
@@ -193,14 +213,14 @@ class Factory
         return true;
     }
 
-    public Building? PlaceBuilding(BuildingType type, GridPosition position)
+    public Building? PlaceBuilding(BuildingType type, GridPosition position, RecipeId recipeId)
     {
-        if (!CanPlaceBuilding(type, position))
+        if (!CanPlaceBuilding(type, position) || !_definitions.IsRecipeAllowed(type, recipeId))
         {
             return null;
         }
 
-        Building building = new Building(_nextBuildingId, type, position);
+        Building building = new Building(_nextBuildingId, type, position, recipeId);
 
         _buildings.Add(_nextBuildingId, building);
         
