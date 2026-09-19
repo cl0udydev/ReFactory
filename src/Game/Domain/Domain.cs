@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 #nullable enable
 
 // resources
@@ -11,11 +13,16 @@ enum ResourceType
 
 struct ResourceAmount
 {
-    public ResourceType Type;
-    public int Amount;
+    public readonly ResourceType Type;
+    public readonly int Amount;
 
     public ResourceAmount(ResourceType type, int amount)
     {
+        if (amount < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(amount));
+        }
+
         Type = type;
         Amount = amount;
     }
@@ -34,7 +41,7 @@ class Building
 {
     public readonly int Id;
     public readonly BuildingType Type;
-    public GridPosition Position { get; set; }
+    public readonly GridPosition Position;
     public readonly RecipeId SelectedRecipe;
 
     public Building(int id, BuildingType type, GridPosition position, RecipeId recipe)
@@ -49,14 +56,23 @@ class Building
 struct BuildingDefinition
 {
     public readonly GridSize Size;
-    public readonly RecipeId[] AllowedRecipes;
+    public readonly ImmutableArray<RecipeId> AllowedRecipes;
     public readonly int Capacity;
     public readonly double CraftSpeed;
 
     public BuildingDefinition(GridSize size, RecipeId[] recipes, int capacity, double craftSpeed)
     {
+        if (capacity < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(capacity));
+        }
+        if (craftSpeed <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(craftSpeed));
+        }
+
         this.Size = size;
-        this.AllowedRecipes = recipes;
+        this.AllowedRecipes = ImmutableArray.Create(recipes);
         this.Capacity = capacity;
         this.CraftSpeed = craftSpeed;
     }
@@ -65,7 +81,7 @@ struct BuildingDefinition
 
 class BuildingDefinitions
 {
-    private Dictionary<BuildingType, BuildingDefinition> _definitions;
+    private readonly Dictionary<BuildingType, BuildingDefinition> _definitions;
 
     public BuildingDefinitions()
     {
@@ -112,21 +128,26 @@ enum RecipeId
 
 struct Recipe
 {
-    public ResourceAmount[] Input;
-    public ResourceAmount[] Output;
-    public double BaseCraftTime;
+    public readonly ImmutableArray<ResourceAmount> Input;
+    public readonly ImmutableArray<ResourceAmount> Output;
+    public readonly double BaseCraftTime;
 
     public Recipe(ResourceAmount[] input, ResourceAmount[] output, double time)
     {
-        this.Input = input;
-        this.Output = output;
+        if (time <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(time));
+        }
+        
+        this.Input = ImmutableArray.Create(input);
+        this.Output = ImmutableArray.Create(output);
         this.BaseCraftTime = time;
     }
 }
 
 class RecipeDatabase
 {
-    private Dictionary<RecipeId, Recipe> _recipes;
+    private readonly Dictionary<RecipeId, Recipe> _recipes;
 
     public RecipeDatabase()
     {
@@ -156,8 +177,8 @@ class RecipeDatabase
 // grid position and grid size structs
 struct GridPosition
 {
-    public int X { get; set; }
-    public int Y { get; set; }
+    public readonly int X;
+    public readonly int Y;
 
     public GridPosition(int x, int y)
     {
@@ -168,11 +189,21 @@ struct GridPosition
 
 struct GridSize
 {
-    public int X { get; set; }
-    public int Y { get; set; }
+    public readonly int X;
+    public readonly int Y;
 
     public GridSize(int x, int y)
     {
+        if (x <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(x));
+        }
+
+        if (y <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(y));
+        }
+        
         this.X = x;
         this.Y = y;
     }
@@ -181,17 +212,27 @@ struct GridSize
 // inventory class
 class Inventory
 {
-    private Dictionary<ResourceType, int> _amounts;
+    private readonly Dictionary<ResourceType, int> _amounts;
     public readonly int Capacity;
 
     public Inventory(int capacity)
     {
+        if (capacity < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(capacity));
+        }
+
         _amounts = new();
-        this.Capacity = capacity;
+        Capacity = capacity;
     }
 
     public int Add(ResourceType type, int amount)
     {
+        if (amount < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(amount));
+        }
+
         int currentAmount = GetAmount(type);
         int freeAmount = Capacity - currentAmount;
 
@@ -204,6 +245,11 @@ class Inventory
 
     public int Remove(ResourceType type, int amount)
     {
+        if (amount < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(amount));
+        }
+
         int currentAmount = GetAmount(type);
 
         int removed = Math.Min(amount, currentAmount);
@@ -226,9 +272,9 @@ class Inventory
 // factory class
 class Factory
 {
-    private Dictionary<int, Building> _buildings;
-    private Dictionary<GridPosition, int> _occupancy;
-    private BuildingDefinitions _definitions;
+    private readonly Dictionary<int, Building> _buildings;
+    private readonly Dictionary<GridPosition, int> _occupancy;
+    private readonly BuildingDefinitions _definitions;
     private int _nextBuildingId = 1;
 
     public Factory()
