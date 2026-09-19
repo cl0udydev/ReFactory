@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 #nullable enable
 
 // resources
@@ -177,6 +177,51 @@ struct GridSize
         this.Y = y;
     }
 }
+
+// inventory class
+class Inventory
+{
+    private Dictionary<ResourceType, int> _amounts;
+    public readonly int Capacity;
+
+    public Inventory(int capacity)
+    {
+        _amounts = new();
+        this.Capacity = capacity;
+    }
+
+    public int Add(ResourceType type, int amount)
+    {
+        int currentAmount = GetAmount(type);
+        int freeAmount = Capacity - currentAmount;
+
+        int added = Math.Min(amount, freeAmount);
+        _amounts[type] = currentAmount + added;
+
+        return added;
+
+    }
+
+    public int Remove(ResourceType type, int amount)
+    {
+        int currentAmount = GetAmount(type);
+
+        int removed = Math.Min(amount, currentAmount);
+        _amounts[type] = currentAmount - removed;
+
+        return removed;
+    }
+
+    public int GetAmount(ResourceType type)
+    {
+        if (!_amounts.TryGetValue(type, out int amount))
+        {
+            return 0;
+        }
+        return amount;
+    }
+}
+
 
 // factory class
 class Factory
