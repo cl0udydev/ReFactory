@@ -37,6 +37,44 @@ enum BuildingType
     Storage,
 }
 
+enum PlaceBuildingResultType
+{
+    Success,
+    Occupied,
+    InvalidRecipe,
+    UnknownBuildingType,
+}
+
+readonly struct PlaceBuildingResult
+{
+    public readonly PlaceBuildingResultType Type;
+    public readonly Building? Building;
+
+    public PlaceBuildingResult(PlaceBuildingResultType type)
+    {
+        if (type == PlaceBuildingResultType.Success)
+        {
+            throw new ArgumentException(nameof(type));
+        }
+        Type = type;
+        Building = null;
+    }
+
+    public PlaceBuildingResult(PlaceBuildingResultType type, Building building)
+    {
+        if (type != PlaceBuildingResultType.Success)
+        {
+            throw new ArgumentException(nameof(type));
+        }
+        if (building == null)
+        {
+            throw new ArgumentException(nameof(building));
+        }
+        Type = type;
+        Building = building;      
+    }
+}
+
 class Building
 {
     public readonly int Id;
