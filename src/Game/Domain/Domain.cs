@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 #nullable enable
 
 // resources
@@ -11,7 +10,7 @@ enum ResourceType
     IronPlate,
 }
 
-struct ResourceAmount
+readonly record struct ResourceAmount
 {
     public readonly ResourceType Type;
     public readonly int Amount;
@@ -54,7 +53,7 @@ readonly struct PlaceBuildingResult
     {
         if (type == PlaceBuildingResultType.Success)
         {
-            throw new ArgumentException(nameof(type));
+            throw new ArgumentOutOfRangeException(nameof(type));
         }
         Type = type;
         Building = null;
@@ -68,7 +67,7 @@ readonly struct PlaceBuildingResult
         }
         if (building == null)
         {
-            throw new ArgumentException(nameof(building));
+            throw new ArgumentOutOfRangeException(nameof(building));
         }
         Type = type;
         Building = building;      
@@ -138,22 +137,15 @@ class BuildingDefinitions
     {
         return _definitions[type];
     }
+
+    public bool TryGetDefinition(BuildingType type, out BuildingDefinition definition)
+    {
+        return _definitions.TryGetValue(type, out definition);
+    }
     
     public bool IsRecipeAllowed(BuildingType type, RecipeId recipeId)
     {
-        if (!_definitions.TryGetValue(type, out BuildingDefinition def))
-        {
-            return false;
-        }
-
-        foreach (RecipeId id in def.AllowedRecipes)
-        {
-            if (id == recipeId)
-            {
-                return true;
-            }
-        }
-        return false;
+        return _definitions.TryGetValue(type, out BuildingDefinition def) && def.AllowedRecipes.Contains(recipeId);
     }
 }
 
@@ -213,7 +205,7 @@ class RecipeDatabase
 
 
 // grid position and grid size structs
-struct GridPosition
+readonly record struct GridPosition
 {
     public readonly int X;
     public readonly int Y;
@@ -225,7 +217,7 @@ struct GridPosition
     }
 }
 
-struct GridSize
+readonly record struct GridSize
 {
     public readonly int X;
     public readonly int Y;
@@ -322,9 +314,9 @@ class Factory
         _definitions = new();
     }
 
-    private bool CanPlaceBuilding(BuildingType type, GridPosition position)
+    private bool CanPlaceBuilding(BuildingDefinition definition, GridPosition position)
     {
-        GridSize size = _definitions.GetDefinition(type).Size;
+        GridSize size = definition.Size;
 
         for (int offsetX = 0; offsetX < size.X; offsetX++)
         {
@@ -342,18 +334,26 @@ class Factory
         return true;
     }
 
-    public Building? PlaceBuilding(BuildingType type, GridPosition position, RecipeId recipeId)
+    public PlaceBuildingResult PlaceBuilding(BuildingType type, GridPosition position, RecipeId recipeId)
     {
-        if (!CanPlaceBuilding(type, position) || !_definitions.IsRecipeAllowed(type, recipeId))
+        if (!_definitions.TryGetDefinition(type, out BuildingDefinition definition))
         {
-            return null;
+            return new PlaceBuildingResult(PlaceBuildingResultType.UnknownBuildingType);
+        }
+        if (!_definitions.IsRecipeAllowed(type, recipeId))
+        {
+            return new PlaceBuildingResult(PlaceBuildingResultType.InvalidRecipe);
+        }
+        if (!CanPlaceBuilding(definition, position))
+        {
+            return new PlaceBuildingResult(PlaceBuildingResultType.Occupied);
         }
 
         Building building = new Building(_nextBuildingId, type, position, recipeId);
 
         _buildings.Add(_nextBuildingId, building);
         
-        GridSize size = _definitions.GetDefinition(type).Size;
+        GridSize size = definition.Size;
 
         for (int offsetX = 0; offsetX < size.X; offsetX++)
         {
@@ -367,7 +367,7 @@ class Factory
 
         _nextBuildingId++;
 
-        return building;
+        return new PlaceBuildingResult(PlaceBuildingResultType.Success, building);
     }
 
     public void RemoveBuilding(int id)
