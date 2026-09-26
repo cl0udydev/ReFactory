@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 #nullable enable
 
@@ -37,22 +38,26 @@ public class Factory
         return true;
     }
 
-    public PlaceBuildingResult PlaceBuilding(BuildingType type, GridPosition position, RecipeId recipeId)
+    public PlaceBuildingResult PlaceBuilding(BuildingType type, GridPosition position, BuildingCreationData buildingData)
     {
         if (!_definitions.TryGetDefinition(type, out BuildingDefinition definition))
         {
             return new PlaceBuildingResult(PlaceBuildingResultType.UnknownBuildingType);
         }
-        if (!_definitions.IsRecipeAllowed(type, recipeId))
-        {
-            return new PlaceBuildingResult(PlaceBuildingResultType.InvalidRecipe);
-        }
+        // if (!_definitions.IsRecipeAllowed(type, recipeId))
+        // {
+        //     return new PlaceBuildingResult(PlaceBuildingResultType.InvalidRecipe);
+        // }
         if (!CanPlaceBuilding(definition, position))
         {
             return new PlaceBuildingResult(PlaceBuildingResultType.Occupied);
         }
 
-        Building building = new Building(_nextBuildingId, type, position, recipeId);
+        buildingData.CompleteFromDefinition(definition);
+
+        Building building = (Building)Activator.CreateInstance(
+            _definitions.GetBuildingClass(type), _nextBuildingId, type, position, buildingData
+            )!;
 
         _buildings.Add(_nextBuildingId, building);
         

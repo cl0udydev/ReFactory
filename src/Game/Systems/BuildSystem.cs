@@ -11,8 +11,8 @@ public class BuildSystem
         _factory = factory;
     }
 
-    public PlaceBuildingResult Build(BuildingType type, GridPosition position, RecipeId recipeId)
+    public PlaceBuildingResult Build(BuildingType type, GridPosition position, BuildingCreationData buildingData)
     {
-        return _factory.PlaceBuilding(type, position, recipeId);
+        return _factory.PlaceBuilding(type, position, buildingData);
     }
 }

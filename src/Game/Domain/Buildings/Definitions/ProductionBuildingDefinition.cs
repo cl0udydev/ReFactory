@@ -3,14 +3,13 @@ using System.Collections.Immutable;
 
 namespace Game.Domain;
 
-public readonly struct BuildingDefinition
+public class ProductionBuildingDefinition: BuildingDefinition
 {
-    public GridSize Size { get; }
     public ImmutableArray<RecipeId> AllowedRecipes { get; }
     public int Capacity { get; }
     public double CraftSpeed { get; }
 
-    public BuildingDefinition(GridSize size, RecipeId[] recipes, int capacity, double craftSpeed)
+    public ProductionBuildingDefinition(GridSize size, RecipeId[] recipes, int capacity, double craftSpeed) : base(size)
     {
         if (capacity < 0)
         {
@@ -21,9 +20,8 @@ public readonly struct BuildingDefinition
             throw new ArgumentOutOfRangeException(nameof(craftSpeed));
         }
 
-        this.Size = size;
-        this.AllowedRecipes = ImmutableArray.Create(recipes);
-        this.Capacity = capacity;
-        this.CraftSpeed = craftSpeed;
+        AllowedRecipes = ImmutableArray.Create(recipes);
+        Capacity = capacity;
+        CraftSpeed = craftSpeed;
     }
 }
