@@ -11,7 +11,7 @@ public class BuildingCreationData
         SelectedRecipe = recipe;
     }
 
-    public void ExpansionData(BuildingDefinition definition)
+    public void CompleteFromDefinition(BuildingDefinition definition)
     {
         if (definition is ProductionBuildingDefinition prodDef)
         {

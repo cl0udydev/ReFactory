@@ -56,7 +56,7 @@ public class Factory
         buildingData.CompleteFromDefinition(definition);
 
         Building building = (Building)Activator.CreateInstance(
-            _definitions.GetBuildingClass(type), _nextBuildingId, type, position, buildingData
+            definition.BuildingClass, _nextBuildingId, type, position, buildingData
             )!;
 
         _buildings.Add(_nextBuildingId, building);

@@ -9,7 +9,8 @@ public class ProductionBuildingDefinition: BuildingDefinition
     public int Capacity { get; }
     public double CraftSpeed { get; }
 
-    public ProductionBuildingDefinition(GridSize size, RecipeId[] recipes, int capacity, double craftSpeed) : base(size)
+    public ProductionBuildingDefinition(Type buildingClass, GridSize size, RecipeId[] recipes, int capacity, double craftSpeed) 
+    : base(size, buildingClass)
     {
         if (capacity < 0)
         {
