@@ -7,7 +7,7 @@ public abstract class BuildingDefinition
     public GridSize Size { get; }
     public Type BuildingClass { get; }
 
-    public BuildingDefinition(GridSize size, Type buildingClass)
+    protected BuildingDefinition(Type buildingClass, GridSize size)
     {
         Size = size;
 
