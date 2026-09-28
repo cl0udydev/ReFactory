@@ -8,19 +8,19 @@ public class RecipeDatabase
 
     public RecipeDatabase()
     {
-        _recipes = new();
-
-        _recipes[RecipeId.IronPlate] = new Recipe(
-            input: new ResourceAmount[]
-            {
-                new ResourceAmount(ResourceType.IronOre, 2),
-            },
-            output: new ResourceAmount[]
-            {
-                new ResourceAmount(ResourceType.IronPlate, 1),
-            },
-            time: 5.0
-        );
+        _recipes = new() {
+            [RecipeId.IronPlate] = new Recipe(
+                input: new ResourceAmount[]
+                {
+                    new ResourceAmount(ResourceType.IronOre, 2),
+                },
+                output: new ResourceAmount[]
+                {
+                    new ResourceAmount(ResourceType.IronPlate, 1),
+                },
+                time: 5.0
+            ),
+        };
     }
 
     public Recipe GetRecipe(RecipeId id)

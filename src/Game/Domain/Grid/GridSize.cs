@@ -9,16 +9,9 @@ public readonly record struct GridSize
 
     public GridSize(int x, int y)
     {
-        if (x <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(x));
-        }
-
-        if (y <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(y));
-        }
-        
+        if (x <= 0) throw new ArgumentOutOfRangeException(nameof(x));
+        if (y <= 0) throw new ArgumentOutOfRangeException(nameof(y));
+ 
         this.X = x;
         this.Y = y;
     }

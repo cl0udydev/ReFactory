@@ -7,8 +7,10 @@ public class StorageBuildingDefinition: BuildingDefinition
     public int Capacity { get; }
 
     public StorageBuildingDefinition(Type buildingClass, GridSize size, int capacity) 
-    : base(size, buildingClass)
+    : base(buildingClass, size)
     {
+        if (capacity < 0) throw new ArgumentOutOfRangeException(nameof(capacity));
+
         Capacity = capacity;
     }
 }

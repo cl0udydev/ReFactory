@@ -7,7 +7,7 @@ public abstract class Building
     public GridPosition Position { get; }
     
 
-    protected Building(int id, BuildingType type, GridPosition position, BuildingCreationData buildingData)
+    protected Building(int id, BuildingType type, GridPosition position)
     {
         Id = id;
         Type = type;

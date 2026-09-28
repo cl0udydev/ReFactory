@@ -9,10 +9,8 @@ public readonly record struct ResourceAmount
 
     public ResourceAmount(ResourceType type, int amount)
     {
-        if (amount < 0)
-        {
-            throw new ArgumentException(nameof(amount));
-        }
+        if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount));
+
 
         Type = type;
         Amount = amount;

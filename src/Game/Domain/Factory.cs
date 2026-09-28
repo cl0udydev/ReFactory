@@ -10,6 +10,7 @@ public class Factory
     private readonly Dictionary<GridPosition, int> _occupancy;
     private readonly BuildingDefinitions _definitions;
     private int _nextBuildingId = 1;
+    public int BuildingCount => _buildings.Count;
 
     public Factory()
     {
@@ -44,20 +45,26 @@ public class Factory
         {
             return new PlaceBuildingResult(PlaceBuildingResultType.UnknownBuildingType);
         }
-        // if (!_definitions.IsRecipeAllowed(type, recipeId))
-        // {
-        //     return new PlaceBuildingResult(PlaceBuildingResultType.InvalidRecipe);
-        // }
+        if (definition is ProductionBuildingDefinition prodDef)
+        {
+            if (buildingData.SelectedRecipe is not RecipeId recipe)
+            {
+                return new PlaceBuildingResult(PlaceBuildingResultType.InvalidRecipe);
+            }
+            if (!prodDef.AllowedRecipes.Contains(recipe))
+            {
+                return new PlaceBuildingResult(PlaceBuildingResultType.InvalidRecipe);
+            }
+        }
         if (!CanPlaceBuilding(definition, position))
         {
             return new PlaceBuildingResult(PlaceBuildingResultType.Occupied);
         }
-
-        buildingData.CompleteFromDefinition(definition);
+        
 
         Building building = (Building)Activator.CreateInstance(
-            definition.BuildingClass, _nextBuildingId, type, position, buildingData
-            )!;
+            definition.BuildingClass, _nextBuildingId, type, position, buildingData, definition
+        )!;
 
         _buildings.Add(_nextBuildingId, building);
         
@@ -125,8 +132,4 @@ public class Factory
         return building;
     }
 
-    public int BuildingCount()
-    {
-        return _buildings.Count;
-    }
 }

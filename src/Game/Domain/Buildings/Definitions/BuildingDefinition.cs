@@ -9,21 +9,16 @@ public abstract class BuildingDefinition
 
     protected BuildingDefinition(Type buildingClass, GridSize size)
     {
+        if (buildingClass == null) 
+        {
+            throw new ArgumentNullException(nameof(buildingClass));
+        }
+        if (buildingClass.IsAbstract || !typeof(Building).IsAssignableFrom(buildingClass)) 
+        {
+            throw new ArgumentException(nameof(buildingClass));
+        }
+
         Size = size;
-
-        if (!buildingClass.IsAssignableTo(typeof(Building)))
-            {
-                throw new ArgumentException(nameof(buildingClass));
-            }
-
-
         BuildingClass = buildingClass;
     }
-
 }
-
-
-
-
-
-

@@ -8,10 +8,8 @@ public class TransportBuildingDefinition: BuildingDefinition
 
     public TransportBuildingDefinition(Type buildingClass, GridSize size, int transferSpeed) : base(buildingClass, size)
     {
-        if (transferSpeed <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(transferSpeed));
-        }
+        if (transferSpeed <= 0) throw new ArgumentOutOfRangeException(nameof(transferSpeed));
+        
         TransferSpeed = transferSpeed;
     }
 }

@@ -12,14 +12,9 @@ public class ProductionBuildingDefinition: BuildingDefinition
     public ProductionBuildingDefinition(Type buildingClass, GridSize size, RecipeId[] recipes, int capacity, double craftSpeed) 
     : base(buildingClass, size)
     {
-        if (capacity < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(capacity));
-        }
-        if (craftSpeed <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(craftSpeed));
-        }
+        if (recipes == null) throw new ArgumentNullException(nameof(recipes));
+        if (capacity < 0) throw new ArgumentOutOfRangeException(nameof(capacity));
+        if (craftSpeed <= 0) throw new ArgumentOutOfRangeException(nameof(craftSpeed));
 
         AllowedRecipes = ImmutableArray.Create(recipes);
         Capacity = capacity;
