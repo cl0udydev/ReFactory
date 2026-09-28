@@ -12,13 +12,24 @@ public class BuildingDefinitions
         _definitions = new()
         {
             [BuildingType.Furnace] = new ProductionBuildingDefinition(
+                buildingClass: typeof(Furnace),
                 size: new GridSize(2, 3),
                 recipes: new RecipeId[] {RecipeId.IronPlate},
                 capacity: 50,
-                craftSpeed: 0.75,
-                buildingClass: typeof(Furnace)
-                
-            )
+                craftSpeed: 0.75
+            ),
+            
+            [BuildingType.Storage] = new StorageBuildingDefinition(
+                buildingClass: typeof(Storage),
+                size: new GridSize(2, 2),
+                capacity: 30    
+            ),
+
+            [BuildingType.Conveyor] = new TransportBuildingDefinition(
+                buildingClass: typeof(Conveyor),
+                size: new GridSize(1, 1),
+                transferSpeed: 5
+            ),
         };
     }
 
