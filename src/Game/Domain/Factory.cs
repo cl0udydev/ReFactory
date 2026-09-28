@@ -49,12 +49,16 @@ public class Factory
         {
             if (buildingData.SelectedRecipe is not RecipeId recipe)
             {
-                return new PlaceBuildingResult(PlaceBuildingResultType.InvalidRecipe);
+                return new PlaceBuildingResult(PlaceBuildingResultType.InvalidCreationData);
             }
             if (!prodDef.AllowedRecipes.Contains(recipe))
             {
                 return new PlaceBuildingResult(PlaceBuildingResultType.InvalidRecipe);
             }
+        }
+        if (definition is TransportBuildingDefinition && buildingData.Direction is null)
+        {
+            return new PlaceBuildingResult(PlaceBuildingResultType.InvalidCreationData);
         }
         if (!CanPlaceBuilding(definition, position))
         {
