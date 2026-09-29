@@ -12,11 +12,11 @@ public class Factory
     private int _nextBuildingId = 1;
     public int BuildingCount => _buildings.Count;
 
-    public Factory()
+    public Factory(BuildingDefinitions definitions)
     {
         _buildings = new();
         _occupancy = new();
-        _definitions = new();
+        _definitions = definitions;
     }
 
     private bool CanPlaceBuilding(BuildingDefinition definition, GridPosition position)
@@ -64,7 +64,6 @@ public class Factory
         {
             return new PlaceBuildingResult(PlaceBuildingResultType.Occupied);
         }
-        
 
         Building building = (Building)Activator.CreateInstance(
             definition.BuildingClass, _nextBuildingId, type, position, buildingData, definition
@@ -136,4 +135,24 @@ public class Factory
         return building;
     }
 
+    public List<Building> GetBuildingsAtType(Type buildingType)
+    {
+        List<Building> buildingList = new List<Building>{};
+
+        if (!typeof(Building).IsAssignableFrom(buildingType))
+        {
+            return buildingList;
+        }
+
+        foreach (Building building in _buildings.Values)
+        {
+            if (buildingType.IsAssignableFrom(building.GetType()))
+            {
+                buildingList.Add(building);
+            }
+        }
+
+        return buildingList;
+
+    }
 }
