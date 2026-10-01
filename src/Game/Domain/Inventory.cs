@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Game.Domain;
 
@@ -59,4 +60,6 @@ public class Inventory
         }
         return amount;
     }
+
+    public int GetTotalAmount() => _amounts.Values.Sum();
 }
