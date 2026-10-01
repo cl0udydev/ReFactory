@@ -6,4 +6,5 @@ public enum PlaceBuildingResultType
     Occupied,
     InvalidRecipe,
     UnknownBuildingType,
+    InvalidCreationData,
 }
