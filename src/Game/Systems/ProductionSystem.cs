@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Game.Domain;
 
 namespace Game.Systems;
@@ -17,18 +19,18 @@ public class ProductionSystem
 
     public void Update(double deltaTime)
     {
-        var productionBuildings = _factory.GetBuildingsAtType(typeof(ProductionBuilding));
+        List<Building> productionBuildings = _factory.GetBuildingsAtType(typeof(ProductionBuilding));
 
         foreach (ProductionBuilding prodBuilding in productionBuildings)
         {
-            var definition = (ProductionBuildingDefinition)_definitions.GetDefinition(prodBuilding.Type);
-            var recipe = _recipesDatabase.GetRecipe(prodBuilding.SelectedRecipe);
-            var actualCraftTime = recipe.BaseCraftTime / definition.CraftSpeed;
-            var canProduce = true;
+            ProductionBuildingDefinition definition = (ProductionBuildingDefinition)_definitions.GetDefinition(prodBuilding.Type);
+            Recipe recipe = _recipesDatabase.GetRecipe(prodBuilding.SelectedRecipe);
+            double actualCraftTime = recipe.BaseCraftTime / definition.CraftSpeed;
+            bool canProduce = true;
 
             foreach (ResourceAmount input in recipe.Input)
             {
-                var available = prodBuilding.InputInventory.GetAmount(input.Type);
+                int available = prodBuilding.InputInventory.GetAmount(input.Type);
 
                 if (available < input.Amount)
                 {
@@ -37,14 +39,14 @@ public class ProductionSystem
                 }
             }
 
-            var totalOutputAmount = 0;
+            int totalOutputAmount = 0;
 
             foreach (ResourceAmount output in recipe.Output)
             {
                 totalOutputAmount += output.Amount;
             }
             
-            var freeCapacity = prodBuilding.OutputInventory.Capacity - prodBuilding.OutputInventory.GetTotalAmount();
+            int freeCapacity = prodBuilding.OutputInventory.Capacity - prodBuilding.OutputInventory.GetTotalAmount();
 
             if (freeCapacity < totalOutputAmount) canProduce = false;
 
@@ -54,7 +56,7 @@ public class ProductionSystem
 
             while (prodBuilding.Progress >= actualCraftTime)
             {
-                var canCompleteCycle = true;
+                bool canCompleteCycle = true;
 
                 foreach (ResourceAmount input in recipe.Input)
                 {
